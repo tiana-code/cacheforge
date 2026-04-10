@@ -1,0 +1,17 @@
+.gradle/
+build/
+*.class
+*.jar
+*.war
+*.ear
+out/
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+*.log
+application-local.yml
+application-local.properties
+CLAUDE.md
+!gradle/wrapper/gradle-wrapper.jar
