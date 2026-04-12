@@ -58,10 +58,10 @@ class GpsOutlierFilterImpl(
                             }
                         })
                 }
-                .doOnError { e ->
-                    logger.warn { "Failed to load GPS filter positions from Redis: ${e.message}" }
-                }
-                .subscribe()
+                .subscribe(
+                    {},
+                    { e -> logger.warn { "Failed to load GPS filter positions from Redis: ${e.message}" } }
+                )
         } catch (e: Exception) {
             logger.warn { "Redis unavailable for GPS filter init: ${e.message}" }
         }
@@ -108,11 +108,12 @@ class GpsOutlierFilterImpl(
                 ?.subscribe(
                     {
                         redisTemplate.expire(redisKey, properties.filter.redisKeyTtl)
-                            .subscribe({}, {})
+                            .subscribe({}, { e -> logger.warn { "Failed to set TTL on GPS filter key: ${e.message}" } })
                     },
-                    {}
+                    { e -> logger.warn { "Failed to persist GPS filter position for $entityId: ${e.message}" } }
                 )
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            logger.warn { "Failed to serialize GPS filter position for $entityId: ${e.message}" }
         }
     }
 

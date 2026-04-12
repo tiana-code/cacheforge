@@ -242,11 +242,12 @@ class CalculatedFieldEngineImplTest {
     }
 
     @Test
-    fun `loadFields propagates exception on repository failure`() {
+    fun `loadFields degrades gracefully on repository failure`() {
         every { repository.findAllActive() } throws RuntimeException("DB connection failed")
 
-        assertThrows<RuntimeException> {
-            CalculatedFieldEngineImpl(repository).loadFields()
-        }
+        val freshEngine = CalculatedFieldEngineImpl(repository)
+        freshEngine.loadFields()
+
+        assertEquals(0, freshEngine.getActiveFieldCount())
     }
 }

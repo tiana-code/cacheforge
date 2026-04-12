@@ -29,13 +29,17 @@ class CalculatedFieldEngineImpl(
 
     @PostConstruct
     fun loadFields() {
-        val fields = fieldRepository.findAllActive()
-        val (built, invalid) = buildSnapshot(fields)
-        snapshot = built
-        if (invalid.isNotEmpty()) {
-            logger.warn { "Skipped ${invalid.size} fields with invalid expressions: $invalid" }
+        try {
+            val fields = fieldRepository.findAllActive()
+            val (built, invalid) = buildSnapshot(fields)
+            snapshot = built
+            if (invalid.isNotEmpty()) {
+                logger.warn { "Skipped ${invalid.size} fields with invalid expressions: $invalid" }
+            }
+            logger.info { "Loaded ${built.activeFields.size} active calculated fields" }
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to load calculated fields — engine will start with empty field set" }
         }
-        logger.info { "Loaded ${built.activeFields.size} active calculated fields" }
     }
 
     override suspend fun reloadFields(): ReloadResult {
