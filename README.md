@@ -1,20 +1,10 @@
 # cacheforge – Multi-Tier Caching with Redis Lua & Caffeine
 
-A Kotlin/Spring Boot module implementing production caching patterns: atomic Redis Lua scripting for geo-spatial index updates, L1/L2 cache hierarchy with Caffeine and Redis, GPS outlier filtering using the Haversine formula, a SpEL-based expression engine with parsed-expression caching, and Lua-based compare-and-set for alert state deduplication.
+Caffeine L1 / Redis L2 caching, Lua scripts for atomic geo-index updates, GPS outlier filtering (Haversine), SpEL expression engine. Kotlin, Spring Boot 3.
 
 ![Track Explorer - maritime dashboard powered by cacheforge](img/sc.png)
 
 ## Architecture
-
-```mermaid
-flowchart LR
-    Client --> CaffeineL1["Caffeine L1\n(in-process, sub-ms)"]
-    CaffeineL1 -->|miss| RedisL2["Redis L2\n(network, ~1ms)"]
-    RedisL2 -->|miss| Database["Database\n(SQL / NoSQL)"]
-    RedisL2 --> GeoIndex["GEO sorted set\n(GEOADD / GEOSEARCH)"]
-    Client --> ExprEngine["CalculatedFieldEngine\n(volatile snapshot + parsed SpEL cache)"]
-    ExprEngine -->|field defs| Database
-```
 
 **Key flows:**
 
